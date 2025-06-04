@@ -1,0 +1,102 @@
+// 程序由语句构成，虽然显得多余，但：
+// a.后续扩展性更强，在更复杂的语法中，清晰体现程序的结构（例如后续可能添加全局声明、包声明等）。
+// b.允许`<statement-list>`在其他上下文中复用（比如函数体内的语句序列）。
+<program> ::= <statement-list>
+
+// 语句列表通过递归定义，支持任意数量的语句。
+// 一个语句（`<statement>`）后跟另一个语句序列（`<statement-list>`），形成递归链。
+// 空序列（`ε`），作为递归终止条件。
+<statement-list> ::= <statement> <statement-list> | ε
+
+// 语句类型
+<statement> ::= <var-declaration>       // 变量声明
+              | <assignment>            // 赋值语句
+              | <function-definition>   // 函数定义
+              | <class-definition>     // 结构体定义
+              | <if-statement>          // 条件语句
+              | <while-loop>            // 循环语句
+              | <expression> ";"        // 表达式语句：以分号结尾的表达式，通常用于计算或调用函数。
+
+// 变量声明，使用关键字var，类型可选
+<var-declaration> ::= "var" <identifier> [ "=" <expression> ] ";"
+
+// 标识符必须以字母开头
+<identifier> ::= <letter> ( <letter> | <digit> | "_" )*
+
+// 字母包括所有大小写字母
+<letter> ::= "a" | "b" | ... | "z" | "A" | "B" | ... | "Z"
+
+// 数字包括从 0 到 9
+<digit> ::= "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9"
+
+// 赋值语句
+<assignment> ::= <identifier> "=" <expression> ";"
+
+// 表达式
+// 逻辑运算符（优先级最低）
+<expression> ::= <logical-or>
+<logical-or>  ::= <logical-and> ( "||" <logical-or> )?
+<logical-and> ::= <equality> ( "&&" <logical-and> )?
+<equality>    ::= <comparison> ( ("==" | "!=") <comparison> )*
+<comparison>  ::= <add-sub> ( ("<" | ">" | "<=" | ">=") <add-sub> )*
+<add-sub>     ::= <mul-div> ( ("+" | "-") <mul-div> )*
+<mul-div>     ::= <factor> ( ("*" | "/" | "%") <mul-div> )*
+<factor>      ::= <literal>
+                | <identifier>
+                | <unary-expression>
+                | "(" <expression> ")"
+                | <function-call>
+                | <class-instantiation>
+                | <field-access>
+
+// 一元表达式
+<unary-expression> ::= ("-" | "!") <factor>
+
+// 字面量
+<literal> ::= <number> | <boolean> | <string>
+// 数字
+<number> ::= <integer> | <float>
+// 整数
+<integer> ::= <digit>+
+// 小数，小数点后至少一位数字
+<float> ::= <digit>+ "." <digit>+
+// 布尔值
+<boolean> ::= "true" | "false"
+// 字符串
+<string> ::= '"' ( <character> | <escape-sequence> )* '"'
+// 转义字符
+<escape-sequence> ::= "\\" | "\"" | "\n" | "\t" | "\r" | "\b"
+// 字符
+<character> ::= <any source character except "\" or newline or the quote>
+
+// 函数调用
+<function-call> ::= <identifier> "(" [ <argument-list> ] ")"
+// 参数列表
+<argument-list> ::= <expression> ( "," <expression> )*
+
+# 结构体实例化（对象创建）
+<class-instantiation> ::= <identifier> "(" [ <field-initializer-list> ] ")"
+<field-initializer-list> ::= <field-initializer> ( "," <field-initializer> )*
+<field-initializer> ::= <identifier> "=" <expression>
+
+# 字段访问（支持链式访问）
+<field-access> ::= <primary> ( "." <identifier> )+
+<primary> ::= <identifier>
+            | "(" <expression> ")"
+            | <class-instantiation>
+
+// 条件语句
+<if-statement> ::= "if" <expression> "{" <statement-list> "}" [ "else" "{" <statement-list> "}" ]
+
+// while循环
+<while-loop> ::= "while" <expression> "{" <statement-list> "}"
+
+// 函数定义
+<function-definition> ::= "func" <identifier> "(" <parameter-list> ")" "{" <statement-list> "}"
+// 函数参数列表
+<parameter-list> ::= <identifier> ("," <identifier>)* | ε
+
+// 结构体定义
+<class-definition> ::= "class" <identifier> "{" <field-list> "}"
+<field-list>      ::= <field-decl> <field-list> | ε
+<field-decl>      ::= "var" <identifier> [ "=" <expression> ] ";"
