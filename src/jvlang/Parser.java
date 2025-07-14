@@ -55,7 +55,6 @@ public class Parser {
     }
 
     private boolean isAtEnd() {
-        // 不能调用peek().symbol == Symbol.EOF，否则死循环
         return current >= tokens.size();
     }
 
@@ -149,7 +148,7 @@ public class Parser {
             // 2. 查看下一个Token是否是等号（ASSIGN）
             if (check(Symbol.ASSIGN)) {
                 // --- 情况1：解析赋值语句 ---
-                advance(); // 消费等号
+                consume(Symbol.ASSIGN, "Expect '=' when assignment statement"); // 消费等号
                 Expression value = expression(); // 解析右侧表达式
                 consume(Symbol.SEMICOLON, "Expect ';' after assignment statement");
                 return new Assignment(new Variable(identifierToken.value.toString()), value);

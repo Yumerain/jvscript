@@ -45,6 +45,25 @@ public class Test {
                 sayHello("haha,");
                 sayHello(x);
                 sayHello(y);
+                println("----：定义九九乘法表");
+                func ninenine()
+                {
+                    var a = 1;
+                    while(a <= 9 ) {
+                        var b = 1;
+                        while(b <= a) {
+                            print(b, "*", a, "=", a*b, "\\t");
+                            b = b + 1;
+                        }
+                        a = a + 1;
+                        println();
+                    }
+                }
+                println("----：输出九九乘法表第1次");
+                ninenine();
+                println("----：输出九九乘法表第2次");
+                ninenine();
+                
                 println("----：类定义");
 //                class Person {
 //                    var age;
