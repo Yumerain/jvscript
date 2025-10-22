@@ -51,14 +51,35 @@ func sayHello(msg) {
     bye();
     println("Hello World, " + msg);
 }
-sayHello("haha,");
+sayHello("haha");
 sayHello(x);
 sayHello(y);
+println("----：有参有返回函数");
+func add(a, b) {
+    return a + b;
+}
+var aa = 10;
+var bb = 90;
+println(aa + "+" + bb + "=" + add(aa,bb));
+println("----：有参有返回函数，递归调用，斐波那契数列");
+func fibo(number) {
+    if number == 0 || number == 1 {
+        return number;
+    } else {
+        return fibo(number - 1) + fibo(number - 2);
+    }
+}
+var d = 0;
+while d <= 10 {
+    print(fibo(d) + "	");
+    d = d + 1;
+}
+println();
 println("----：定义九九乘法表");
-func nineXnine()
+func ninenine()
 {
     var a = 1;
-    while(a <= 9 ) {
+    while(a <= 9) {
         var b = 1;
         while(b <= a) {
             print(b, "*", a, "=", a*b, "\t");
@@ -68,8 +89,6 @@ func nineXnine()
         println();
     }
 }
-println("----：输出九九乘法表第1次");
-nineXnine();
-println("----：输出九九乘法表第2次");
-nineXnine();
+println("----：输出九九乘法表");
+ninenine();
 ```
