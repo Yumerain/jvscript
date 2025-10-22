@@ -1,7 +1,7 @@
 package jvlang.stmt;
 
+import jvlang.ExecutionResult;
 import jvlang.Scope;
-import jvlang.model.ReturnSignal;
 import jvlang.expr.Expression;
 
 /**
@@ -10,6 +10,7 @@ import jvlang.expr.Expression;
  */
 public class ReturnStatement implements Statement {
 
+    // 可为 null，表示无返回值
     private final Expression expression;
 
     public ReturnStatement(Expression expression) {
@@ -17,8 +18,8 @@ public class ReturnStatement implements Statement {
     }
 
     @Override
-    public void exec(Scope scope) {
+    public ExecutionResult exec(Scope scope) {
         Object value = (expression != null) ? expression.eval(scope) : null;
-        throw new ReturnSignal(value); // 抛出返回值
+        return ExecutionResult.returnWith(value);
     }
 }

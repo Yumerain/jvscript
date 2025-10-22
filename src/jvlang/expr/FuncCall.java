@@ -1,7 +1,7 @@
 package jvlang.expr;
 
+import jvlang.ExecutionResult;
 import jvlang.Scope;
-import jvlang.model.ReturnSignal;
 import jvlang.stmt.FuncDefinition;
 import jvlang.stmt.Statement;
 
@@ -63,15 +63,14 @@ public class FuncCall implements Expression {
             funcScope.declareVariable(paramName, argValue);
         }
 
-        // 5. 执行函数体并捕获返回值
-        try {
-            for (Statement stmt : function.body) {
-                stmt.exec(funcScope);
+        // 5. 执行函数体
+        for (Statement stmt : function.body) {
+            ExecutionResult result = stmt.exec(funcScope);
+            if (result.isReturn) {
+                return result.returnValue; // 直接返回
             }
-            return null; // 没有 return 语句时返回 null
-        } catch (ReturnSignal returnSignal) {
-            return returnSignal.value; // 捕获并返回结果
         }
+        return null; // 隐式返回 null
     }
 
 }

@@ -1,5 +1,6 @@
 package jvlang.stmt;
 
+import jvlang.ExecutionResult;
 import jvlang.Scope;
 
 import java.util.List;
@@ -16,18 +17,20 @@ public class FuncDefinition implements Statement {
 
     public final List<Statement> body;
 
-    public final Scope definitionScope; // 新增字段
+    public Scope definitionScope;
 
     public FuncDefinition(String name, List<String> parameters, List<Statement> body) {
         this.name = name;
         this.parameters = parameters;
         this.body = body;
-        this.definitionScope = new Scope();
     }
 
     @Override
-    public void exec(Scope scope) {
+    public ExecutionResult exec(Scope scope) {
+        // 捕获定义时的作用域
+        this.definitionScope = scope;
         // 将函数注册到当前作用域
-        scope.defineFunction(name, this);
+        this.definitionScope.defineFunction(name, this);
+        return ExecutionResult.CONTINUE;
     }
 }

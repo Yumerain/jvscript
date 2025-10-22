@@ -1,5 +1,6 @@
 package jvlang.stmt;
 
+import jvlang.ExecutionResult;
 import jvlang.Scope;
 
 /**
@@ -8,6 +9,6 @@ import jvlang.Scope;
  */
 public interface Statement {
 
-    void exec(Scope scope);
+    ExecutionResult exec(Scope scope);
 
 }

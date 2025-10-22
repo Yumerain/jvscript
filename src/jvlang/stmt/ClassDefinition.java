@@ -1,5 +1,6 @@
 package jvlang.stmt;
 
+import jvlang.ExecutionResult;
 import jvlang.Scope;
 import jvlang.model.FieldDeclaration;
 
@@ -21,9 +22,10 @@ public class ClassDefinition implements Statement {
     }
 
     @Override
-    public void exec(Scope scope) {
+    public ExecutionResult exec(Scope scope) {
         // 将结构体类型注册到作用域
         scope.defineClass(name, this);
+        return ExecutionResult.CONTINUE;
     }
 
 }

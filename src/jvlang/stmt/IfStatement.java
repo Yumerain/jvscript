@@ -1,5 +1,6 @@
 package jvlang.stmt;
 
+import jvlang.ExecutionResult;
 import jvlang.Scope;
 import jvlang.expr.Expression;
 
@@ -24,7 +25,7 @@ public class IfStatement implements Statement {
     }
 
     @Override
-    public void exec(Scope scope) {
+    public ExecutionResult exec(Scope scope) {
         // 1. 计算条件表达式
         Object condValue = condition.eval(scope);
         // 2. 确保结果为布尔类型
@@ -34,17 +35,22 @@ public class IfStatement implements Statement {
         boolean conditionResult = (Boolean) condValue;
         // 3. 根据条件执行对应分支
         if (conditionResult) {
-            executeBranch(thenBranch, scope);
+            return executeBranch(thenBranch, scope);
         } else if (elseBranch != null) {
-            executeBranch(elseBranch, scope);
+            return executeBranch(elseBranch, scope);
         }
+        return ExecutionResult.CONTINUE;
     }
 
     // 执行分支语句（自动创建子作用域）
-    private void executeBranch(List<Statement> branch, Scope parentScope) {
+    private ExecutionResult executeBranch(List<Statement> branch, Scope parentScope) {
         Scope branchScope = new Scope(parentScope); // 创建子作用域
         for (Statement stmt : branch) {
-            stmt.exec(branchScope);
+            ExecutionResult result = stmt.exec(branchScope);
+            if (result.isReturn) {
+                return result;
+            }
         }
+        return ExecutionResult.CONTINUE;
     }
 }

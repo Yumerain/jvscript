@@ -9,13 +9,14 @@
 <statement-list> ::= <statement> <statement-list> | ε
 
 // 语句类型
-<statement> ::= <var-declaration>       // 变量声明
-              | <assignment>            // 赋值语句
-              | <function-definition>   // 函数定义
-              | <class-definition>     // 结构体定义
-              | <if-statement>          // 条件语句
-              | <while-loop>            // 循环语句
-              | <expression> ";"        // 表达式语句：以分号结尾的表达式，通常用于计算或调用函数。
+<statement> ::= <var-declaration>               // 变量声明
+              | <assignment>                    // 赋值语句
+              | <function-definition>           // 函数定义
+              | <class-definition>              // 类结构定义
+              | <if-statement>                  // 条件语句
+              | <while-loop>                    // 循环语句
+              | "return" [ <expression> ] ";"   // return 后面可以跟表达式（返回值），也可以不跟（隐式返回 null 或 void）。所以用 [ <expression> ] 表示可选。
+              | <expression> ";"                // 表达式语句：以分号结尾的表达式，通常用于计算或调用函数。
 
 // 变量声明，使用关键字var，类型可选
 <var-declaration> ::= "var" <identifier> [ "=" <expression> ] ";"

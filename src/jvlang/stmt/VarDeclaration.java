@@ -1,5 +1,6 @@
 package jvlang.stmt;
 
+import jvlang.ExecutionResult;
 import jvlang.Scope;
 import jvlang.Symbol;
 import jvlang.expr.Expression;
@@ -21,7 +22,7 @@ public class VarDeclaration implements Statement {
         this.initializer = initializer;
     }
 
-    public void exec(Scope scope) {
+    public ExecutionResult exec(Scope scope) {
         Object value = null;
         if (initializer != null) {
             value = initializer.eval(scope);
@@ -33,6 +34,7 @@ public class VarDeclaration implements Statement {
             }
         }
         scope.declareVariable(identifier, this.type, value);
+        return ExecutionResult.CONTINUE;
     }
 
     // 根据值推断类型

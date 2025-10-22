@@ -11,13 +11,13 @@ import java.util.Map;
  * @author Yumerain
  */
 public class Scope {
-    // 存储结构体定义
-    private final static Map<String, ClassDefinition> classes = new HashMap<>();
-    // 方法定义
-    private final static Map<String, FuncDefinition> functions = new HashMap<>();
+    // 类定义
+    private final Map<String, ClassDefinition> classes = new HashMap<>();
+    // 函数定义
+    private final Map<String, FuncDefinition> functions = new HashMap<>();
     // 变量定义
     private final Map<String, Object> variables = new HashMap<>();
-    // 存储变量类型
+    // 类型定义
     private final Map<String, Symbol> types = new HashMap<>();
     // 父级作用域
     private final Scope parent;

@@ -1,5 +1,6 @@
 package jvlang.stmt;
 
+import jvlang.ExecutionResult;
 import jvlang.Scope;
 import jvlang.expr.Expression;
 
@@ -20,7 +21,7 @@ public class WhileLoop implements Statement {
     }
 
     @Override
-    public void exec(Scope scope) {
+    public ExecutionResult exec(Scope scope) {
         while (true) {
             // 1. 计算条件
             Object condValue = condition.eval(scope);
@@ -39,5 +40,6 @@ public class WhileLoop implements Statement {
                 stmt.exec(loopScope);
             }
         }
+        return ExecutionResult.CONTINUE;
     }
 }

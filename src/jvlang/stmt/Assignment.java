@@ -1,5 +1,6 @@
 package jvlang.stmt;
 
+import jvlang.ExecutionResult;
 import jvlang.Scope;
 import jvlang.expr.Expression;
 import jvlang.expr.FieldAccess;
@@ -23,7 +24,7 @@ public class Assignment implements Statement {
     }
 
     @Override
-    public void exec(Scope scope) {
+    public ExecutionResult exec(Scope scope) {
         Object value = this.value.eval(scope);
 
         if (target instanceof Variable) {
@@ -44,6 +45,7 @@ public class Assignment implements Statement {
         } else {
             throw new RuntimeException("Invalid assignment target");
         }
+        return ExecutionResult.CONTINUE;
     }
 
 }

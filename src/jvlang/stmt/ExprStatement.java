@@ -1,5 +1,6 @@
 package jvlang.stmt;
 
+import jvlang.ExecutionResult;
 import jvlang.Scope;
 import jvlang.expr.Expression;
 
@@ -16,8 +17,9 @@ public class ExprStatement implements Statement {
     }
 
     @Override
-    public void exec(Scope scope) {
+    public ExecutionResult exec(Scope scope) {
         expression.eval(scope);
+        return ExecutionResult.CONTINUE;
     }
 
 }
