@@ -1,5 +1,6 @@
 package jvlang.expr;
 
+import jvlang.JvsException;
 import jvlang.Scope;
 import jvlang.Symbol;
 
@@ -48,7 +49,7 @@ public class BinaryExpr implements Expression {
             // 获取最大类型做为运算结果
             int finalType = bigType(l, r);
             if (finalType == UNKNOWN) {
-                throw new RuntimeException("Unsupported data type " + l.getClass().getName() + " and " + r.getClass().getName());
+                throw new JvsException("Unsupported data type " + l.getClass().getName() + " and " + r.getClass().getName());
             }
             switch (operator) {
                 case PLUS:
@@ -62,7 +63,7 @@ public class BinaryExpr implements Expression {
                 case MODULO:
                     return modulo(finalType, l, r);
                 default :
-                    throw new RuntimeException("Unsupported operator: " + operator);
+                    throw new JvsException("Unsupported operator: " + operator);
             }
         }
         // 字符串加法运算
@@ -72,7 +73,7 @@ public class BinaryExpr implements Expression {
             }
         }
         // 其它类型的运算不支持
-        throw new RuntimeException("Unsupported operation type: " + leftValue + " " +  operator + " " + rightValue);
+        throw new JvsException("Unsupported operation type: " + leftValue + " " +  operator + " " + rightValue);
     }
 
 
@@ -84,7 +85,7 @@ public class BinaryExpr implements Expression {
             case DOUBLE:
                 return Double.valueOf(left.doubleValue() + right.doubleValue());
         }
-        throw new RuntimeException("Unsupported data type for plus");
+        throw new JvsException("Unsupported data type for plus");
     }
 
     // 减法
@@ -95,7 +96,7 @@ public class BinaryExpr implements Expression {
             case DOUBLE:
                 return Double.valueOf(left.doubleValue() - right.doubleValue());
         }
-        throw new RuntimeException("Unsupported data type for minus");
+        throw new JvsException("Unsupported data type for minus");
     }
 
     // 乘法
@@ -106,7 +107,7 @@ public class BinaryExpr implements Expression {
             case DOUBLE:
                 return Double.valueOf(left.doubleValue() * right.doubleValue());
         }
-        throw new RuntimeException("Unsupported data type for multiply");
+        throw new JvsException("Unsupported data type for multiply");
     }
 
     // 除法
@@ -117,7 +118,7 @@ public class BinaryExpr implements Expression {
             case DOUBLE:
                 return Double.valueOf(left.doubleValue() / right.doubleValue());
         }
-        throw new RuntimeException("Unsupported data type for divide");
+        throw new JvsException("Unsupported data type for divide");
     }
 
     // 取模
@@ -128,7 +129,7 @@ public class BinaryExpr implements Expression {
             case DOUBLE:
                 return Double.valueOf(left.doubleValue() % right.doubleValue());
         }
-        throw new RuntimeException("Unsupported data type for modulo");
+        throw new JvsException("Unsupported data type for modulo");
     }
 
     // 最大的类型
@@ -152,10 +153,10 @@ public class BinaryExpr implements Expression {
     private Boolean logical(Object leftVal, Object rightVal) {
         // 类型检查
         if (!(leftVal instanceof Boolean)) {
-            throw new RuntimeException("Left operand of " + operator + " must be boolean");
+            throw new JvsException("Left operand of " + operator + " must be boolean");
         }
         if (!(rightVal instanceof Boolean)) {
-            throw new RuntimeException("Right operand of " + operator + " must be boolean");
+            throw new JvsException("Right operand of " + operator + " must be boolean");
         }
 
         boolean a = (Boolean) leftVal;
@@ -164,7 +165,7 @@ public class BinaryExpr implements Expression {
         switch (operator) {
             case AND: return a && b;
             case OR:  return a || b;
-            default:  throw new RuntimeException("Unreachable code");
+            default:  throw new JvsException("Unreachable code");
         }
     }
 
@@ -212,7 +213,7 @@ public class BinaryExpr implements Expression {
             case GREATER:       return a > b;
             case LESS_EQUAL:    return a <= b;
             case GREATER_EQUAL: return a >= b;
-            default: throw new RuntimeException("Invalid comparison operator for numbers: " + operator);
+            default: throw new JvsException("Invalid comparison operator for numbers: " + operator);
         }
     }
 
@@ -225,7 +226,7 @@ public class BinaryExpr implements Expression {
             case GREATER:  return a.compareTo(b) > 0;
             case LESS_EQUAL:    return a.compareTo(b) <= 0;
             case GREATER_EQUAL: return a.compareTo(b) >= 0;
-            default: throw new RuntimeException("Invalid comparison operator for strings: " + operator);
+            default: throw new JvsException("Invalid comparison operator for strings: " + operator);
         }
     }
 
@@ -234,7 +235,7 @@ public class BinaryExpr implements Expression {
         switch (operator) {
             case EQUAL:    return a == b;
             case NOTEQUAL: return a != b;
-            default: throw new RuntimeException("Invalid comparison operator for booleans: " + operator);
+            default: throw new JvsException("Invalid comparison operator for booleans: " + operator);
         }
     }
 
@@ -244,7 +245,7 @@ public class BinaryExpr implements Expression {
         switch (operator) {
             case EQUAL:    return a == b;
             case NOTEQUAL: return a != b;
-            default: throw new RuntimeException("Null values can only be compared with == or !=");
+            default: throw new JvsException("Null values can only be compared with == or !=");
         }
     }
 
@@ -253,7 +254,7 @@ public class BinaryExpr implements Expression {
         switch (operator) {
             case EQUAL:    return a.equals(b);
             case NOTEQUAL: return !a.equals(b);
-            default: throw new RuntimeException("Object comparison only supports == and != for type: "
+            default: throw new JvsException("Object comparison only supports == and != for type: "
                     + a.getClass().getSimpleName());
         }
     }

@@ -1,6 +1,7 @@
 package jvlang.expr;
 
 import jvlang.ExecutionResult;
+import jvlang.JvsException;
 import jvlang.Scope;
 import jvlang.stmt.FuncDefinition;
 import jvlang.stmt.Statement;
@@ -44,12 +45,12 @@ public class FuncCall implements Expression {
         // 1. 查找函数定义
         FuncDefinition function = scope.getFunction(name);
         if (function == null) {
-            throw new RuntimeException("Undefined function: " + name);
+            throw new JvsException("Undefined function: " + name);
         }
 
         // 2. 验证参数数量
         if (args.size() != function.parameters.size()) {
-            throw new RuntimeException("Function " + name + " expects " +
+            throw new JvsException("Function " + name + " expects " +
                     function.parameters.size() + " arguments but got " + args.size());
         }
 

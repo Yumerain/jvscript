@@ -1,5 +1,6 @@
 package jvlang.expr;
 
+import jvlang.JvsException;
 import jvlang.Scope;
 import jvlang.model.FieldDeclaration;
 import jvlang.model.ClassInstance;
@@ -26,7 +27,7 @@ public class ClassExpr implements Expression {
         // 1. 获取结构体定义
         ClassDefinition classDef = scope.getClassDefine(className);
         if (classDef == null) {
-            throw new RuntimeException("Undefined struct: " + className);
+            throw new JvsException("Undefined struct: " + className);
         }
         // 2. 创建实例作用域
         Scope instanceScope = new Scope(scope);

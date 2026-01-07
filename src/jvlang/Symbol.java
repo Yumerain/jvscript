@@ -22,7 +22,7 @@ public enum Symbol {
     CLASS("class"),
     IF("if"),
     ELSE("else"),
-    WHILE("while"),
+    FOR("for"),
     TRUE("true"),
     FALSE("false"),
 
@@ -81,7 +81,7 @@ public enum Symbol {
         put(CLASS.value, CLASS);
         put(IF.value, IF);
         put(ELSE.value, ELSE);
-        put(WHILE.value, WHILE);
+        put(FOR.value, FOR);
         put(TRUE.value, TRUE);
         put(FALSE.value, FALSE);
         put(RETURN.value, RETURN);

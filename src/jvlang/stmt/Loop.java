@@ -1,6 +1,7 @@
 package jvlang.stmt;
 
 import jvlang.ExecutionResult;
+import jvlang.JvsException;
 import jvlang.Scope;
 import jvlang.expr.Expression;
 
@@ -10,12 +11,12 @@ import java.util.List;
  * 循环语句
  * @author Yumerain
  */
-public class WhileLoop implements Statement {
+public class Loop implements Statement {
 
     public final Expression condition;
     public final List<Statement> body;
 
-    public WhileLoop(Expression condition, List<Statement> body) {
+    public Loop(Expression condition, List<Statement> body) {
         this.condition = condition;
         this.body = body;
     }
@@ -28,7 +29,7 @@ public class WhileLoop implements Statement {
 
             // 2. 检查布尔类型
             if (!(condValue instanceof Boolean)) {
-                throw new RuntimeException("While condition must be boolean, got " + condValue.getClass().getSimpleName());
+                throw new JvsException("While condition must be boolean, got " + condValue.getClass().getSimpleName());
             }
 
             // 3. 条件为 false 时退出循环

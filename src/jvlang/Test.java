@@ -61,7 +61,7 @@ public class Test {
         }
     }
     var d = 0;
-    while d <= 10 {
+    for d <= 10 {
         print(fibo(d) + "\t");
         d = d + 1;
     }
@@ -70,9 +70,9 @@ public class Test {
     func ninenine()
     {
         var a = 1;
-        while(a <= 9) {
+        for(a <= 9) {
             var b = 1;
-            while(b <= a) {
+            for(b <= a) {
                 print(b, "*", a, "=", a*b, "\\t");
                 b = b + 1;
             }

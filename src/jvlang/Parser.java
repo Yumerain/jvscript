@@ -16,7 +16,7 @@ import jvlang.stmt.ReturnStatement;
 import jvlang.stmt.Statement;
 import jvlang.stmt.ClassDefinition;
 import jvlang.stmt.VarDeclaration;
-import jvlang.stmt.WhileLoop;
+import jvlang.stmt.Loop;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -69,7 +69,7 @@ public class Parser {
 
     private Token consume(Symbol symbol, String message) {
         if (check(symbol)) return advance();
-        throw new RuntimeException(message + " at line " + peek().line);
+        throw new JvsException(message + " at line " + peek().line);
     }
 
     private boolean match(Symbol symbol) {
@@ -135,7 +135,7 @@ public class Parser {
         // 由起始关键字识别的语句
         if (match(Symbol.VAR)) return varDeclaration();         // 变量声明
         if (match(Symbol.IF)) return ifCondition();             // if语句
-        if (match(Symbol.WHILE)) return whileLoop();            // while循环
+        if (match(Symbol.FOR)) return loop();              // 循环
         if (match(Symbol.FUNC)) return funcDefinition();        // 函数定义
         if (match(Symbol.CLASS)) return classDefinition();      // 类定义
         if (match(Symbol.RETURN)) return returnStatement();     // 函数返回值
@@ -164,7 +164,7 @@ public class Parser {
             }
         }
 
-        throw new RuntimeException("Unexpected token: " + peek().symbol + " at line " + peek().line);
+        throw new JvsException("Unexpected token: " + peek().symbol + " at line " + peek().line);
     }
 
     // 辅助方法：检查当前Token是否为标识符
@@ -326,7 +326,7 @@ public class Parser {
             case IDENTIFIER:
                 return new Variable(token.value.toString());
             default:
-                throw new RuntimeException("Unexpected token: " + peek().symbol + " at line " + peek().line);
+                throw new JvsException("Unexpected token: " + peek().symbol + " at line " + peek().line);
         }
     }
 
@@ -360,7 +360,7 @@ public class Parser {
         if (value instanceof Double) return Symbol.FLOAT;
         if (value instanceof Boolean) return Symbol.BOOL;
         if (value instanceof String) return Symbol.STRING;
-        throw new RuntimeException("Cannot infer type for value: " + value);
+        throw new JvsException("Cannot infer type for value: " + value);
     }
 
     /**
@@ -390,16 +390,16 @@ public class Parser {
 
     /**
      * 循环语句
-     * <while-loop> ::= "while" <expression> "{" <statement-list> "}"
+     * <loop> ::= "for" <expression> "{" <statement-list> "}"
      */
-    private Statement whileLoop() {
-        //consume(Symbol.WHILE, "Expect 'while' keyword"); // 消费 while 关键字
+    private Statement loop() {
+        //consume(Symbol.FOR, "Expect 'for' keyword"); // 消费 while 关键字
         Expression condition = expression();     // 解析条件表达式
 
         consume(Symbol.LBRACE, "Expect '{' after while condition"); // 消费 {
         List<Statement> body = statementList();  // 解析循环体语句列表
         consume(Symbol.RBRACE, "Expect '}' after while block"); // 消费 }
-        return new WhileLoop(condition, body);
+        return new Loop(condition, body);
     }
 
     // 函数定义

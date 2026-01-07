@@ -63,16 +63,16 @@ public class Lexer {
                 if (checkNext('&')) {
                     return new Token(Symbol.AND, line);
                 } else {
-                    throw new RuntimeException("Single '&' is not supported at line " + line);
+                    throw new JvsException("Single '&' is not supported at line " + line);
                 }
             case '|':
                 if (checkNext('|')) {
                     return new Token(Symbol.OR, line);
                 } else {
-                    throw new RuntimeException("Single '|' is not supported at line " + line);
+                    throw new JvsException("Single '|' is not supported at line " + line);
                 }
         }
-        throw new RuntimeException("Unexpected character '" + c + "' at line " + line + " position " + current);
+        throw new JvsException("Unexpected character '" + c + "' at line " + line + " position " + current);
     }
 
     private Token number() {
@@ -82,7 +82,7 @@ public class Lexer {
         if (peek() == '.') {
             // 检查小数点后必须跟数字
             if (!Character.isDigit(peekNext())) {
-                throw new RuntimeException("Invalid float literal at line " + line);
+                throw new JvsException("Invalid float literal at line " + line);
             }
             advance(); // 吃掉小数点
             while (Character.isDigit(peek())) advance();
@@ -115,7 +115,7 @@ public class Lexer {
             char c = advance();
             if (c == '\\') {
                 // 处理转义字符
-                if (isAtEnd()) throw new RuntimeException("Unterminated escape sequence");
+                if (isAtEnd()) throw new JvsException("Unterminated escape sequence");
                 char esc = advance();
                 switch (esc) {
                     case 'n': sb.append('\n'); break;
@@ -124,17 +124,17 @@ public class Lexer {
                     case 'b': sb.append('\b'); break;
                     case '"': sb.append('"'); break;
                     case '\\': sb.append('\\'); break;
-                    default: throw new RuntimeException("Invalid escape sequence: \\" + esc);
+                    default: throw new JvsException("Invalid escape sequence: \\" + esc);
                 }
             } else {
                 // 检查未转义的换行符
                 if (c == '\n') {
-                    throw new RuntimeException("Unterminated string: newline not allowed without escape at line " + line);
+                    throw new JvsException("Unterminated string: newline not allowed without escape at line " + line);
                 }
                 sb.append(c);
             }
         }
-        if (isAtEnd()) throw new RuntimeException("Unterminated string at line " + line);
+        if (isAtEnd()) throw new JvsException("Unterminated string at line " + line);
         advance(); // 吃掉闭合引号
         return new Token(Symbol.TEXT, sb.toString(), line);
     }

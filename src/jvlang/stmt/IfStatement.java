@@ -1,6 +1,7 @@
 package jvlang.stmt;
 
 import jvlang.ExecutionResult;
+import jvlang.JvsException;
 import jvlang.Scope;
 import jvlang.expr.Expression;
 
@@ -30,7 +31,7 @@ public class IfStatement implements Statement {
         Object condValue = condition.eval(scope);
         // 2. 确保结果为布尔类型
         if (!(condValue instanceof Boolean)) {
-            throw new RuntimeException("If condition must be boolean, got " + condValue.getClass().getSimpleName());
+            throw new JvsException("If condition must be boolean, got " + condValue.getClass().getSimpleName());
         }
         boolean conditionResult = (Boolean) condValue;
         // 3. 根据条件执行对应分支

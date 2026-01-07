@@ -1,5 +1,6 @@
 package jvlang.expr;
 
+import jvlang.JvsException;
 import jvlang.Scope;
 import jvlang.model.ClassInstance;
 
@@ -24,7 +25,7 @@ public class FieldAccess implements Expression {
 
         // 2. 验证是否为结构体实例
         if (!(targetObj instanceof ClassInstance)) {
-            throw new RuntimeException("Field access on non-struct type: "
+            throw new JvsException("Field access on non-struct type: "
                     + targetObj.getClass().getSimpleName());
         }
 
@@ -32,7 +33,7 @@ public class FieldAccess implements Expression {
 
         // 3. 检查字段是否存在
         if (!instance.fields.hasVariable(fieldName)) {
-            throw new RuntimeException("Undefined field '" + fieldName
+            throw new JvsException("Undefined field '" + fieldName
                     + "' in struct " + instance.definition.name);
         }
 

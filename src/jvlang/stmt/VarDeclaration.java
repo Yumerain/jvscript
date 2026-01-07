@@ -1,6 +1,7 @@
 package jvlang.stmt;
 
 import jvlang.ExecutionResult;
+import jvlang.JvsException;
 import jvlang.Scope;
 import jvlang.Symbol;
 import jvlang.expr.Expression;
@@ -43,7 +44,7 @@ public class VarDeclaration implements Statement {
         if (value instanceof Double) return Symbol.FLOAT;
         if (value instanceof Boolean) return Symbol.BOOL;
         if (value instanceof String) return Symbol.TEXT;
-        throw new RuntimeException("Cannot infer type for value: " + value);
+        throw new JvsException("Cannot infer type for value: " + value);
     }
 
 }

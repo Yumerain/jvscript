@@ -14,7 +14,7 @@
               | <function-definition>           // 函数定义
               | <class-definition>              // 类结构定义
               | <if-statement>                  // 条件语句
-              | <while-loop>                    // 循环语句
+              | <loop>                          // 循环语句
               | "return" [ <expression> ] ";"   // return 后面可以跟表达式（返回值），也可以不跟（隐式返回 null 或 void）。所以用 [ <expression> ] 表示可选。
               | <expression> ";"                // 表达式语句：以分号结尾的表达式，通常用于计算或调用函数。
 
@@ -89,8 +89,8 @@
 // 条件语句
 <if-statement> ::= "if" <expression> "{" <statement-list> "}" [ "else" "{" <statement-list> "}" ]
 
-// while循环
-<while-loop> ::= "while" <expression> "{" <statement-list> "}"
+// 循环
+<loop> ::= "for" <expression> "{" <statement-list> "}"
 
 // 函数定义
 <function-definition> ::= "func" <identifier> "(" <parameter-list> ")" "{" <statement-list> "}"

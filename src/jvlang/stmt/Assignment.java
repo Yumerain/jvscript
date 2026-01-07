@@ -1,6 +1,7 @@
 package jvlang.stmt;
 
 import jvlang.ExecutionResult;
+import jvlang.JvsException;
 import jvlang.Scope;
 import jvlang.expr.Expression;
 import jvlang.expr.FieldAccess;
@@ -37,13 +38,13 @@ public class Assignment implements Statement {
             Object instance = fieldAccess.target.eval(scope);
 
             if (!(instance instanceof ClassInstance)) {
-                throw new RuntimeException("Field assignment on non-struct instance");
+                throw new JvsException("Field assignment on non-struct instance");
             }
 
             ClassInstance struct = (ClassInstance) instance;
             struct.fields.setVariable(fieldAccess.fieldName, value);
         } else {
-            throw new RuntimeException("Invalid assignment target");
+            throw new JvsException("Invalid assignment target");
         }
         return ExecutionResult.CONTINUE;
     }

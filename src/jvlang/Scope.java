@@ -27,14 +27,14 @@ public class Scope {
 
     public void declareVariable(String name, Object value) {
         if (variables.containsKey(name)) {
-            throw new RuntimeException("Variable already declared: " + name);
+            throw new JvsException("Variable already declared: " + name);
         }
         variables.put(name, value);
     }
 
     public void declareVariable(String name, Symbol type, Object value) {
         if (variables.containsKey(name)) {
-            throw new RuntimeException("Variable already declared: " + name);
+            throw new JvsException("Variable already declared: " + name);
         }
         variables.put(name, value);
         types.put(name, type);
@@ -48,7 +48,7 @@ public class Scope {
         } else if (parent != null) {
             parent.setVariable(name, value);
         } else {
-            throw new RuntimeException("Undefined variable: " + name);
+            throw new JvsException("Undefined variable: " + name);
         }
     }
 
@@ -58,7 +58,7 @@ public class Scope {
         } else if (parent != null) {
             return parent.getVariable(name);
         } else {
-            throw new RuntimeException("Undefined variable: " + name);
+            throw new JvsException("Undefined variable: " + name);
         }
     }
 
@@ -68,30 +68,30 @@ public class Scope {
         } else if (parent != null) {
             return parent.getType(name);
         } else {
-            throw new RuntimeException("Undefined variable: " + name);
+            throw new JvsException("Undefined variable: " + name);
         }
     }
 
     public void checkType(Symbol expectedType, Object value) {
         if (expectedType == null) return; // 如果未指定类型，跳过检查
         if (expectedType == Symbol.INT && !(value instanceof Long)) {
-            throw new RuntimeException("Type mismatch: expected int, got " + value.getClass().getSimpleName());
+            throw new JvsException("Type mismatch: expected int, got " + value.getClass().getSimpleName());
         }
         if (expectedType == Symbol.FLOAT && !(value instanceof Double)) {
-            throw new RuntimeException("Type mismatch: expected float, got " + value.getClass().getSimpleName());
+            throw new JvsException("Type mismatch: expected float, got " + value.getClass().getSimpleName());
         }
         if (expectedType == Symbol.BOOL && !(value instanceof Boolean)) {
-            throw new RuntimeException("Type mismatch: expected bool, got " + value.getClass().getSimpleName());
+            throw new JvsException("Type mismatch: expected bool, got " + value.getClass().getSimpleName());
         }
         if (expectedType == Symbol.STRING && !(value instanceof String)) {
-            throw new RuntimeException("Type mismatch: expected string, got " + value.getClass().getSimpleName());
+            throw new JvsException("Type mismatch: expected string, got " + value.getClass().getSimpleName());
         }
     }
 
     // 存储函数定义
     public void defineFunction(String name, FuncDefinition function) {
         if (functions.containsKey(name)) {
-            throw new RuntimeException("Function already defined: " + name);
+            throw new JvsException("Function already defined: " + name);
         }
         functions.put(name, function);
     }
@@ -106,7 +106,7 @@ public class Scope {
 
     public void defineClass(String name, ClassDefinition clxss) {
         if (classes.containsKey(name)) {
-            throw new RuntimeException("class already defined: " + name);
+            throw new JvsException("class already defined: " + name);
         }
         classes.put(name, clxss);
     }
