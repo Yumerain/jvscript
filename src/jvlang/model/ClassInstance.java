@@ -2,9 +2,10 @@ package jvlang.model;
 
 import jvlang.Scope;
 import jvlang.stmt.ClassDefinition;
+import jvlang.stmt.FuncDefinition;
 
 /**
- * 结构体实例表示
+ * 类实例化表示
  * @author Yumerain
  */
 public class ClassInstance {
@@ -15,6 +16,10 @@ public class ClassInstance {
     public ClassInstance(ClassDefinition def, Scope fields) {
         this.definition = def;
         this.fields = fields;
+    }
+
+    public FuncDefinition getMethod(String name) {
+        return definition.getMethod(name);
     }
 
 }

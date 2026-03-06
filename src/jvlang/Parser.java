@@ -2,9 +2,12 @@ package jvlang;
 
 import jvlang.expr.BinaryExpr;
 import jvlang.expr.Expression;
+import jvlang.expr.FieldAccess;
 import jvlang.expr.FuncCall;
 import jvlang.expr.Literal;
 import jvlang.expr.ClassExpr;
+import jvlang.expr.MethodCall;
+import jvlang.expr.ThisExpr;
 import jvlang.expr.UnaryExpr;
 import jvlang.expr.Variable;
 import jvlang.model.FieldDeclaration;
@@ -109,22 +112,6 @@ public class Parser {
         return statements;
     }
 
-    // 使用严格递归实现，直接对应BNF但效率较低
-    // BNF: <statement-list> ::= <statement> <statement-list> | ε
-    //private List<Statement> statementList() {
-    //    if (isAtEnd() || peek().symbol == Symbol.RBRACE) {
-    //        return Collections.emptyList(); // ε
-    //    }
-    //    Statement stmt = statement();
-    //    List<Statement> res = statementList(); // 递归调用
-    //    List<Statement> result = new ArrayList<>();
-    //    result.add(stmt);
-    //    result.addAll(res);
-    //    return result;
-    //}
-
-
-
     // 解析单个语句
     private Statement statement() {
         // 遇到EOF时返回null，由上层处理
@@ -140,20 +127,65 @@ public class Parser {
         if (match(Symbol.CLASS)) return classDefinition();      // 复合结构：类定义
         if (match(Symbol.RETURN)) return returnStatement();     // 函数返回值
 
+        // 处理this开头的字段访问或赋值
+        if (check(Symbol.THIS)) {
+            // 先解析this表达式
+            match(Symbol.THIS);
+            Expression expr = new ThisExpr();
+            
+            // 解析字段访问链
+            while (match(Symbol.DOT)) {
+                Token fieldToken = consume(Symbol.IDENTIFIER, "Expect field name after '.'");
+                expr = new FieldAccess(expr, fieldToken.value.toString());
+            }
+            
+            // 检查是否是赋值
+            if (check(Symbol.ASSIGN)) {
+                consume(Symbol.ASSIGN, "Expect '=' when assignment statement");
+                Expression value = expression();
+                consume(Symbol.SEMICOLON, "Expect ';' after assignment statement");
+                return new Assignment(expr, value);
+            } else {
+                // 表达式语句 - 需要继续解析可能的表达式部分
+                // 回退并使用完整的expression()解析
+                current--; // 回退到this之前
+                expr = expression();
+                consume(Symbol.SEMICOLON, "Expect ';' after expression statement");
+                return new ExprStatement(expr);
+            }
+        }
+
         // 赋值或表达式语句
         if (checkIdentifier()) {
             // 1. 确保当前Token是标识符（由外部 checkIdentifier() 保证）
             Token identifierToken = consume(Symbol.IDENTIFIER, "Internal error: expected identifier");
 
-            // 2. 查看下一个Token是否是等号（ASSIGN）
-            if (check(Symbol.ASSIGN)) {
-                // --- 情况1：解析赋值语句 ---
+            // 2. 查看下一个Token判断语句类型
+            if (check(Symbol.DOT)) {
+                // --- 情况1：字段访问或字段赋值 ---
+                // 回退到标识符位置，使用parseFieldOrMethod解析
+                current--;
+                Expression expr = parseFieldOrMethod();
+                
+                // 检查是否是赋值
+                if (check(Symbol.ASSIGN)) {
+                    consume(Symbol.ASSIGN, "Expect '=' when assignment statement");
+                    Expression value = expression();
+                    consume(Symbol.SEMICOLON, "Expect ';' after assignment statement");
+                    return new Assignment(expr, value);
+                } else {
+                    // 表达式语句
+                    consume(Symbol.SEMICOLON, "Expect ';' after expression statement");
+                    return new ExprStatement(expr);
+                }
+            } else if (check(Symbol.ASSIGN)) {
+                // --- 情况2：变量赋值语句 ---
                 consume(Symbol.ASSIGN, "Expect '=' when assignment statement"); // 消费等号
                 Expression value = expression(); // 解析右侧表达式
                 consume(Symbol.SEMICOLON, "Expect ';' after assignment statement");
                 return new Assignment(new Variable(identifierToken.value.toString()), value);
             } else {
-                // --- 情况2：回退并解析表达式语句 ---
+                // --- 情况3：回退并解析表达式语句 ---
                 // 回退到标识符的起始位置（因为已经消费了标识符Token）
                 current--;
                 // 解析完整的表达式（可能包含更复杂的结构，如函数调用）
@@ -297,7 +329,7 @@ public class Parser {
         return expr;
     }
 
-    // 解析因子 <factor> ::= <literal> | <identifier> | <unary-expression> | "(" <expression> ")" | <function-call>
+    // 解析因子 <factor> ::= <literal> | <identifier> | <unary-expression> | "(" <expression> ")" | <function-call> | <class-instantiation> | <field-access> | <method-call> | <this-expression>
     private Expression factor() {
         // 一元运算符 ! 或 -
         if (match(Symbol.MINUS) || match(Symbol.NOT)) {
@@ -306,16 +338,35 @@ public class Parser {
             return new UnaryExpr(op, right);
         }
         // 括号表达式
-        if (match(Symbol.LPAREN)) { // 括号表达式
+        if (match(Symbol.LPAREN)) {
             Expression expr = expression();
             consume(Symbol.RPAREN, "Expect ')' after expression");
             return expr; // 直接返回内部表达式，不需要特殊节点
         }
-        // 函数调用：标识符后紧跟 (
-        if (peek().symbol == Symbol.IDENTIFIER && peekNext().symbol == Symbol.LPAREN) {
-            return funcCall();
+        // this表达式
+        if (match(Symbol.THIS)) {
+            Expression expr = new ThisExpr();
+            // 继续解析可能的字段访问或方法调用
+            while (match(Symbol.DOT)) {
+                Token fieldToken = consume(Symbol.IDENTIFIER, "Expect field name after '.'");
+                String fieldName = fieldToken.value.toString();
+                
+                // 检查是否是方法调用
+                if (match(Symbol.LPAREN)) {
+                    List<Expression> args = argumentList();
+                    consume(Symbol.RPAREN, "Expect ')' after method arguments");
+                    expr = new MethodCall(expr, fieldName, args);
+                } else {
+                    expr = new FieldAccess(expr, fieldName);
+                }
+            }
+            return expr;
         }
-        // 字面量或变量
+        // 标识符开头的表达式（变量、字段访问、函数调用、方法调用、类实例化）
+        if (check(Symbol.IDENTIFIER)) {
+            return identifierExpression();
+        }
+        // 字面量
         Token token = advance();
         switch (token.symbol) {
             case NUMBER:
@@ -323,11 +374,81 @@ public class Parser {
             case TRUE:
             case FALSE:
                 return new Literal(token.value);
-            case IDENTIFIER:
-                return new Variable(token.value.toString());
             default:
                 throw new JvsException("Unexpected token: " + peek().symbol + " at line " + peek().line);
         }
+    }
+
+    // 解析标识符开头的表达式（变量、字段访问、函数调用、方法调用、类实例化）
+    private Expression identifierExpression() {
+        Token identifier = consume(Symbol.IDENTIFIER, "Expect identifier");
+        String name = identifier.value.toString();
+        
+        // 情况1：标识符后跟 ( - 可能是函数调用或类实例化
+        if (match(Symbol.LPAREN)) {
+            // 回退，让funcCall或classInstantiation处理
+            current--;
+            return parseCallOrInstantiation(name);
+        }
+        
+        // 情况2：标识符后跟 . - 字段访问或方法调用
+        if (match(Symbol.DOT)) {
+            // 回退，让fieldAccess或methodCall处理
+            current--;
+            current--; // 回退到标识符
+            return parseFieldOrMethod();
+        }
+        
+        // 情况3：普通变量
+        return new Variable(name);
+    }
+
+    // 解析函数调用或类实例化
+    private Expression parseCallOrInstantiation(String name) {
+        consume(Symbol.LPAREN, "Expect '('");
+        
+        // 检查是否是类实例化（参数列表中使用 field = value 形式）
+        // 这里需要前瞻判断：如果第一个参数是 identifier = 的形式，则是类实例化
+        boolean isClassInstantiation = false;
+        if (check(Symbol.IDENTIFIER)) {
+            // 保存当前位置
+            int savedPos = current;
+            advance(); // 消费字段名
+            if (check(Symbol.ASSIGN)) {
+                isClassInstantiation = true;
+            }
+            current = savedPos; // 恢复位置
+        }
+        
+        if (isClassInstantiation) {
+            return classInstantiation(name);
+        } else {
+            // 函数调用
+            List<Expression> args = argumentList();
+            consume(Symbol.RPAREN, "Expect ')' after arguments");
+            return new FuncCall(name, args);
+        }
+    }
+
+    // 解析字段访问或方法调用
+    private Expression parseFieldOrMethod() {
+        Expression expr = new Variable(consume(Symbol.IDENTIFIER, "Expect identifier").value.toString());
+        
+        while (match(Symbol.DOT)) {
+            Token fieldToken = consume(Symbol.IDENTIFIER, "Expect field name after '.'");
+            String fieldName = fieldToken.value.toString();
+            
+            // 检查是否是方法调用（后面跟着括号）
+            if (match(Symbol.LPAREN)) {
+                List<Expression> args = argumentList();
+                consume(Symbol.RPAREN, "Expect ')' after method arguments");
+                expr = new MethodCall(expr, fieldName, args);
+            } else {
+                expr = new FieldAccess(expr, fieldName);
+            }
+        }
+        
+        return expr;
     }
 
     // 函数调用
@@ -444,50 +565,53 @@ public class Parser {
         // 2. 解析结构体名称
         Token nameToken = consume(Symbol.IDENTIFIER, "Expect class name");
         String className = nameToken.value.toString();
-        // 3. 解析字段列表
+        // 3. 解析字段列表和方法列表
         consume(Symbol.LBRACE, "Expect '{' after class name");
-        List<FieldDeclaration> fields = defineFieldList();
+        List<FieldDeclaration> fields = new ArrayList<>();
+        List<FuncDefinition> methods = new ArrayList<>();
+        
+        while (!check(Symbol.RBRACE) && !isAtEnd()) {
+            if (match(Symbol.VAR)) {
+                // 字段定义
+                Token fieldToken = consume(Symbol.IDENTIFIER, "Expect field name");
+                String fieldName = fieldToken.value.toString();
+                
+                Expression initializer = null;
+                if (match(Symbol.ASSIGN)) {
+                    initializer = expression();
+                }
+                
+                consume(Symbol.SEMICOLON, "Expect ';' after field declaration");
+                fields.add(new FieldDeclaration(fieldName, initializer));
+            } else if (match(Symbol.FUN)) {
+                // 方法定义
+                Token methodNameToken = consume(Symbol.IDENTIFIER, "Expect method name");
+                String methodName = methodNameToken.value.toString();
+                
+                consume(Symbol.LPAREN, "Expect '(' after method name");
+                List<String> parameters = defineParameterList();
+                consume(Symbol.RPAREN, "Expect ')' after parameters");
+                
+                consume(Symbol.LBRACE, "Expect '{' before method body");
+                List<Statement> body = statementList();
+                consume(Symbol.RBRACE, "Expect '}' after method body");
+                
+                methods.add(new FuncDefinition(methodName, parameters, body));
+            } else {
+                throw new JvsException("Expect field or method definition in class at line " + peek().line);
+            }
+        }
+        
         consume(Symbol.RBRACE, "Expect '}' after class body");
 
-        return new ClassDefinition(className, fields);
+        return new ClassDefinition(className, fields, methods);
     }
 
-    private List<FieldDeclaration> defineFieldList() {
-        List<FieldDeclaration> fields = new ArrayList<>();
-
-        while (!check(Symbol.RBRACE) && !isAtEnd()) {
-            // 1. 必须包含 var 关键字
-            consume(Symbol.VAR, "Field declaration must start with 'var'");
-
-            // 2. 解析字段名
-            Token fieldToken = consume(Symbol.IDENTIFIER, "Expect field name");
-            String fieldName = fieldToken.value.toString();
-
-            // 3. 解析可选初始化表达式
-            Expression initializer = null;
-            if (match(Symbol.ASSIGN)) {
-                initializer = expression();
-            }
-
-            // 4. 强制分号结尾
-            consume(Symbol.SEMICOLON, "Expect ';' after field declaration");
-
-            // 加入定义的字段集合
-            fields.add(new FieldDeclaration(fieldName, initializer));
-        }
-
-        return fields;
-    }
-
-    // 结构体实例化
-    private Expression classInstantiation() {
-        Token nameToken = consume(Symbol.IDENTIFIER, "Expect class name");
-        String className = nameToken.value.toString();
-
-        consume(Symbol.LBRACE, "Expect '{' after class name");
+    // 类实例化
+    private Expression classInstantiation(String className) {
         Map<String, Expression> initializers = new HashMap<>();
 
-        if (!check(Symbol.RBRACE)) {
+        if (!check(Symbol.RPAREN)) {
             do {
                 Token fieldToken = consume(Symbol.IDENTIFIER, "Expect field name");
                 consume(Symbol.ASSIGN, "Expect '=' after field name");
@@ -496,7 +620,7 @@ public class Parser {
             } while (match(Symbol.COMMA));
         }
 
-        consume(Symbol.RBRACE, "Expect '}' after class initializers");
+        consume(Symbol.RPAREN, "Expect ')' after class initializers");
         return new ClassExpr(className, initializers);
     }
 

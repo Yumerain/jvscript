@@ -25,6 +25,7 @@ public enum Symbol {
     FOR("for"),
     TRUE("true"),
     FALSE("false"),
+    THIS("this"),
 
     // 类型
     INT("int"),
@@ -84,6 +85,7 @@ public enum Symbol {
         put(FOR.value, FOR);
         put(TRUE.value, TRUE);
         put(FALSE.value, FALSE);
+        put(THIS.value, THIS);
         put(RETURN.value, RETURN);
     }};
 

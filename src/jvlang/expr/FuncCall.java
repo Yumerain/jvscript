@@ -3,6 +3,9 @@ package jvlang.expr;
 import jvlang.ExecutionResult;
 import jvlang.JvsException;
 import jvlang.Scope;
+import jvlang.model.ClassInstance;
+import jvlang.model.FieldDeclaration;
+import jvlang.stmt.ClassDefinition;
 import jvlang.stmt.FuncDefinition;
 import jvlang.stmt.Statement;
 
@@ -44,6 +47,25 @@ public class FuncCall implements Expression {
         // 用户自定义函数调用实现
         // 1. 查找函数定义
         FuncDefinition function = scope.getFunction(name);
+        
+        // 如果找不到普通函数，尝试查找类定义即构造函数（支持无参数类实例化）
+        if (function == null) {
+            ClassDefinition classDef = scope.getClassDefine(name);
+            if (classDef != null) {
+                // 创建类实例
+                Scope instanceScope = new Scope(scope);
+                for (FieldDeclaration field : classDef.fields) {
+                    if (field.initializer != null) {
+                        Object value = field.initializer.eval(scope);
+                        instanceScope.declareVariable(field.name, value);
+                    } else {
+                        instanceScope.declareVariable(field.name, null);
+                    }
+                }
+                return new ClassInstance(classDef, instanceScope);
+            }
+        }
+        
         if (function == null) {
             throw new JvsException("Undefined function: " + name);
         }

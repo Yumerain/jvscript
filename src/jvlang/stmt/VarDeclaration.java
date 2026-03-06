@@ -5,6 +5,7 @@ import jvlang.JvsException;
 import jvlang.Scope;
 import jvlang.Symbol;
 import jvlang.expr.Expression;
+import jvlang.model.ClassInstance;
 
 /**
  * 变量声明语句 <var-declaration>
@@ -44,6 +45,7 @@ public class VarDeclaration implements Statement {
         if (value instanceof Double) return Symbol.FLOAT;
         if (value instanceof Boolean) return Symbol.BOOL;
         if (value instanceof String) return Symbol.TEXT;
+        if (value instanceof ClassInstance) return null; // 类实例使用动态类型
         throw new JvsException("Cannot infer type for value: " + value);
     }
 
