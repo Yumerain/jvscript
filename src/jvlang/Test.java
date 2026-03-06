@@ -114,7 +114,7 @@ public class Test {
     println("=== 测试输出九九乘法表 ===");
     ninenine();
 
-    println("=== 测试测试类定义与实例化 ===");
+    println("=== 测试类定义与实例化 ===");
     class Point {
         var x = 0;
         var y = 0;
@@ -122,16 +122,16 @@ public class Test {
     var p = Point(x = 10, y = 20);
     println("Point created: x=", p.x, ", y=", p.y);
     
-    println("=== 测试测试字段访问 ===");
+    println("=== 测试字段访问 ===");
     println("p.x = ", p.x);
     println("p.y = ", p.y);
     
-    println("=== 测试测试字段赋值 ===");
+    println("=== 测试字段赋值 ===");
     p.x = 100;
     p.y = 200;
     println("After assignment: p.x = ", p.x, ", p.y = ", p.y);
     
-    println("=== 测试测试this关键字和方法 ===");
+    println("=== 测试this关键字和方法 ===");
     class Counter {
         var count = 0;
     
@@ -151,11 +151,11 @@ public class Test {
     counter.increment();
     println("After second increment: ", counter.count);
     
-    println("=== 测试测试方法返回值 ===");
+    println("=== 测试方法返回值 ===");
     var result = counter.getCount();
     println("getCount() returned: ", result);
     
-    println("=== 测试测试带参数的方法 ===");
+    println("=== 测试带参数的方法 ===");
     class Calculator {
         var value = 0;
     
@@ -175,7 +175,7 @@ public class Test {
     calc.multiply(2);
     println("After multiply(2): ", calc.value);
     
-    println("=== 测试所有测试完成 ===");
+    println("=== 所有测试完成 ===");
 """;
         //System.out.println(source);
         Lexer lexer = new Lexer(source);
