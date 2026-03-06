@@ -16,7 +16,7 @@ import jvlang.stmt.ReturnStatement;
 import jvlang.stmt.Statement;
 import jvlang.stmt.ClassDefinition;
 import jvlang.stmt.VarDeclaration;
-import jvlang.stmt.Loop;
+import jvlang.stmt.LoopStatement;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -399,7 +399,7 @@ public class Parser {
         consume(Symbol.LBRACE, "Expect '{' after while condition"); // 消费 {
         List<Statement> body = statementList();  // 解析循环体语句列表
         consume(Symbol.RBRACE, "Expect '}' after while block"); // 消费 }
-        return new Loop(condition, body);
+        return new LoopStatement(condition, body);
     }
 
     // 函数定义

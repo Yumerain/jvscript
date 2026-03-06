@@ -28,7 +28,7 @@ public class Test {
     }
     println("----：循环语句");
     var c = 10;
-    while c > 0 {
+    for c > 0 {
         print("loop c=", c, ",");
         c = c - 1;
     }
@@ -66,6 +66,33 @@ public class Test {
         d = d + 1;
     }
     println();
+    
+    println("----：四则运算函数");
+    func calc(a, b, opt) {
+        print(a, opt, b, "=");
+        if opt == "+" {
+            return a + b;
+        }
+        if opt == "-" {
+            return a - b;
+        }
+        if opt == "*" {
+            return a * b;
+        }
+        if opt == "/" {
+            return a / b;
+        }
+        if opt == "%" {
+            return a % b;
+        }
+        return null;
+    }
+    println(calc(8, 2, "+"));
+    println(calc(8, 2, "-"));
+    println(calc(8, 2, "*"));
+    println(calc(8, 2, "/"));
+    println(calc(8, 5, "%"));
+    
     println("----：定义九九乘法表");
     func ninenine()
     {
@@ -82,22 +109,17 @@ public class Test {
     }
     println("----：输出九九乘法表");
     ninenine();
-    
+
     println("----：类定义");
-//    class Person {
-//        var age;
-//        var name;
-//    }
-//    func sum(a, b) {
-//        return a + b;
-//    }
-//    println("sum(4+5)=", sum(4, 5));
-//    var ab = sum(2,8);
-//    println("2+8=", ab);
+    class Person {
+        var age;
+        var name;
+    }
+
 //    var p = Person();
 //    println("name=",p.name, "age=",p.age);
 """;
-
+        System.out.println(source);
         Lexer lexer = new Lexer(source);
         List<Token> tokens = lexer.tokenize();
 

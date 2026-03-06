@@ -9,13 +9,13 @@
 <statement-list> ::= <statement> <statement-list> | ε
 
 // 语句类型
-<statement> ::= <var-declaration>               // 变量声明
+<statement> ::= <var-declaration>               // 变量声明语句
               | <assignment>                    // 赋值语句
-              | <function-definition>           // 函数定义
-              | <class-definition>              // 类结构定义
+              | <function-definition>           // 函数定义语句
+              | <class-definition>              // 类结构定义语句
               | <if-statement>                  // 条件语句
-              | <loop>                          // 循环语句
-              | "return" [ <expression> ] ";"   // return 后面可以跟表达式（返回值），也可以不跟（隐式返回 null 或 void）。所以用 [ <expression> ] 表示可选。
+              | <loop-statement>                // 循环语句
+              | <return-statement>              // 返回语句
               | <expression> ";"                // 表达式语句：以分号结尾的表达式，通常用于计算或调用函数。
 
 // 变量声明，使用关键字var，类型可选
@@ -33,8 +33,8 @@
 // 赋值语句
 <assignment> ::= <identifier> "=" <expression> ";"
 
-// 表达式
-// 逻辑运算符（优先级最低）
+// 表达式语句
+// 逻辑运算表达式（优先级最低在最前）
 <expression> ::= <logical-or>
 <logical-or>  ::= <logical-and> ( "||" <logical-or> )?
 <logical-and> ::= <equality> ( "&&" <logical-and> )?
@@ -75,29 +75,27 @@
 // 参数列表
 <argument-list> ::= <expression> ( "," <expression> )*
 
-# 结构体实例化（对象创建）
-<class-instantiation> ::= <identifier> "(" [ <field-initializer-list> ] ")"
-<field-initializer-list> ::= <field-initializer> ( "," <field-initializer> )*
-<field-initializer> ::= <identifier> "=" <expression>
-
-# 字段访问（支持链式访问）
-<field-access> ::= <primary> ( "." <identifier> )+
-<primary> ::= <identifier>
-            | "(" <expression> ")"
-            | <class-instantiation>
-
 // 条件语句
 <if-statement> ::= "if" <expression> "{" <statement-list> "}" [ "else" "{" <statement-list> "}" ]
 
 // 循环
-<loop> ::= "for" <expression> "{" <statement-list> "}"
+<loop-statement> ::= "for" <expression> "{" <statement-list> "}"
+
+// 返回语句，return 后面可以跟表达式（返回值），也可以不跟（隐式返回 null 或 void）。所以用 [ <expression> ] 表示可选。
+<return-statement> ::= "return" [ <expression> ] ";"
 
 // 函数定义
 <function-definition> ::= "func" <identifier> "(" <parameter-list> ")" "{" <statement-list> "}"
 // 函数参数列表
 <parameter-list> ::= <identifier> ("," <identifier>)* | ε
 
-// 结构体定义
+// 复合类型定义
 <class-definition> ::= "class" <identifier> "{" <field-list> "}"
+// 复合类型字段列表
 <field-list>      ::= <field-decl> <field-list> | ε
+// 复合类型字段定义
 <field-decl>      ::= "var" <identifier> [ "=" <expression> ] ";"
+// 复合类型构创建
+<class-instantiation> ::= <identifier> "(" [ <field-initializer-list> ] ")"
+<field-initializer-list> ::= <field-initializer> ( "," <field-initializer> )*
+<field-initializer> ::= <identifier> "=" <expression>

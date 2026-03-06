@@ -11,12 +11,12 @@ import java.util.List;
  * 循环语句
  * @author Yumerain
  */
-public class Loop implements Statement {
+public class LoopStatement implements Statement {
 
     public final Expression condition;
     public final List<Statement> body;
 
-    public Loop(Expression condition, List<Statement> body) {
+    public LoopStatement(Expression condition, List<Statement> body) {
         this.condition = condition;
         this.body = body;
     }
