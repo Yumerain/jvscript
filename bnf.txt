@@ -111,12 +111,10 @@
 <class-definition> ::= "class" <identifier> "{" <class-member-list> "}"
 // 复合类型成员列表（包含字段和方法）
 <class-member-list> ::= <class-member> <class-member-list> | ε
-// 复合类型成员（字段或方法）
-<class-member> ::= <field-decl> | <method-definition>
+// 复合类型成员（字段或方法，方法复用函数定义语法）
+<class-member> ::= <field-decl> | <function-definition>
 // 复合类型字段定义
 <field-decl>      ::= "var" <identifier> [ "=" <expression> ] ";"
-// 复合类型方法定义
-<method-definition> ::= "fun" <identifier> "(" <parameter-list> ")" "{" <statement-list> "}"
 // 复合类型构创建
 <class-instantiation> ::= <identifier> "(" [ <field-initializer-list> ] ")"
 <field-initializer-list> ::= <field-initializer> ( "," <field-initializer> )*
