@@ -34,11 +34,11 @@ public class Test {
     }
     println();
     println("----：无参函数");
-    func bye() {
+    fun bye() {
         print("bye bye~");
     }
     println("----：有参函数");
-    func sayHello(msg) {
+    fun sayHello(msg) {
         bye();
         println("Hello World, " + msg);
     }
@@ -46,14 +46,14 @@ public class Test {
     sayHello(x);
     sayHello(y);
     println("----：有参有返回函数");
-    func add(a, b) {
+    fun add(a, b) {
         return a + b;
     }
     var aa = 10;
     var bb = 90;
     println(aa + "+" + bb + "=" + add(aa,bb));
     println("----：有参有返回函数，递归，斐波那契数列");
-    func fibo(number) {
+    fun fibo(number) {
         if number == 0 || number == 1 {
             return number;
         } else {
@@ -68,7 +68,7 @@ public class Test {
     println();
     
     println("----：四则运算函数");
-    func calc(a, b, opt) {
+    fun calc(a, b, opt) {
         print(a, opt, b, "=");
         if opt == "+" {
             return a + b;
@@ -94,7 +94,7 @@ public class Test {
     println(calc(8, 5, "%"));
     
     println("----：定义九九乘法表");
-    func ninenine()
+    fun ninenine()
     {
         var a = 1;
         for(a <= 9) {

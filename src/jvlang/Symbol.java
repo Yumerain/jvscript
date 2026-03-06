@@ -18,7 +18,7 @@ public enum Symbol {
 
     // 关键字
     VAR("var"),
-    FUNC("func"),
+    FUN("fun"),
     CLASS("class"),
     IF("if"),
     ELSE("else"),
@@ -77,7 +77,7 @@ public enum Symbol {
     private static final Map<String, Symbol> keywords = new HashMap<String, Symbol>() {{
         // 关键字
         put(VAR.value, VAR);
-        put(FUNC.value, FUNC);
+        put(FUN.value, FUN);
         put(CLASS.value, CLASS);
         put(IF.value, IF);
         put(ELSE.value, ELSE);

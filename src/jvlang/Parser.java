@@ -135,9 +135,9 @@ public class Parser {
         // 由起始关键字识别的语句
         if (match(Symbol.VAR)) return varDeclaration();         // 变量声明
         if (match(Symbol.IF)) return ifCondition();             // if语句
-        if (match(Symbol.FOR)) return loop();              // 循环
-        if (match(Symbol.FUNC)) return funcDefinition();        // 函数定义
-        if (match(Symbol.CLASS)) return classDefinition();      // 类定义
+        if (match(Symbol.FOR)) return loop();                   // 循环
+        if (match(Symbol.FUN)) return funcDefinition();         // 函数定义
+        if (match(Symbol.CLASS)) return classDefinition();      // 复合结构：类定义
         if (match(Symbol.RETURN)) return returnStatement();     // 函数返回值
 
         // 赋值或表达式语句
@@ -403,12 +403,12 @@ public class Parser {
     }
 
     // 函数定义
-    // 函数体：<function-definition> ::= "func" <identifier> "(" <parameter-list> ")" "{" <statement-list> "}"
+    // 函数体：<function-definition> ::= "fun" <identifier> "(" <parameter-list> ")" "{" <statement-list> "}"
     // 函数参数列表：<parameter-list> ::= <identifier> ("," <identifier>)* | ε
     private Statement funcDefinition() {
-        // consume(Symbol.FUNC, "Expect 'func' keyword"); // 消费 func
+        // consume(Symbol.FUN, "Expect 'fun' keyword"); // 消费 fun
         // 解析函数名
-        Token nameToken = consume(Symbol.IDENTIFIER, "Expect function name after 'func'");
+        Token nameToken = consume(Symbol.IDENTIFIER, "Expect function name after 'fun'");
         String functionName = nameToken.value.toString();
         // 解析参数列表
         consume(Symbol.LPAREN, "Expect '(' after function name");

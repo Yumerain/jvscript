@@ -10,7 +10,8 @@
 
 // 语句类型
 <statement> ::= <var-declaration>               // 变量声明语句
-              | <assignment>                    // 赋值语句
+              | <assignment>                    // 变量赋值语句
+              | <field-assignment>              // 类字段赋值语句
               | <function-definition>           // 函数定义语句
               | <class-definition>              // 类结构定义语句
               | <if-statement>                  // 条件语句
@@ -33,6 +34,11 @@
 // 赋值语句
 <assignment> ::= <identifier> "=" <expression> ";"
 
+// 字段赋值语句（支持链式字段赋值，如 obj.field.subfield = value）
+<field-assignment> ::= <member-access> "=" <expression> ";"
+// 成员访问（用于字段赋值左侧，支持链式访问）
+<member-access> ::= <identifier> ( "." <identifier> )*
+
 // 表达式语句
 // 逻辑运算表达式（优先级最低在最前）
 <expression> ::= <logical-or>
@@ -42,6 +48,8 @@
 <comparison>  ::= <add-sub> ( ("<" | ">" | "<=" | ">=") <add-sub> )*
 <add-sub>     ::= <mul-div> ( ("+" | "-") <mul-div> )*
 <mul-div>     ::= <factor> ( ("*" | "/" | "%") <mul-div> )*
+
+// 表达式解析的最底层，是优先级最高的基本单元。它定义了表达式可以开始的所有基本形式。
 <factor>      ::= <literal>
                 | <identifier>
                 | <unary-expression>
@@ -49,9 +57,20 @@
                 | <function-call>
                 | <class-instantiation>
                 | <field-access>
+                | <method-call>
+                | <this-expression>
 
 // 一元表达式
 <unary-expression> ::= ("-" | "!") <factor>
+
+// 字段访问（支持链式访问，如 obj.field.subfield）
+<field-access> ::= <identifier> ( "." <identifier> )+
+
+// 方法调用（支持链式调用，如 obj.method().anotherMethod()）
+<method-call> ::= <identifier> ( "." <identifier> )* "." <identifier> "(" [ <argument-list> ] ")"
+
+// this表达式（在方法内部引用当前实例）
+<this-expression> ::= "this"
 
 // 字面量
 <literal> ::= <number> | <boolean> | <string>
@@ -64,11 +83,10 @@
 // 布尔值
 <boolean> ::= "true" | "false"
 // 字符串
-<string> ::= '"' ( <character> | <escape-sequence> )* '"'
+<string> ::= '"' (<string-content>)* '"'
+<string-content> ::= <letter> | <digit> | <escape-sequence>
 // 转义字符
-<escape-sequence> ::= "\\" | "\"" | "\n" | "\t" | "\r" | "\b"
-// 字符
-<character> ::= <any source character except "\" or newline or the quote>
+<escape-sequence> ::= "\\" | "\"" | "\n" | "\t"
 
 // 函数调用
 <function-call> ::= <identifier> "(" [ <argument-list> ] ")"
@@ -85,16 +103,20 @@
 <return-statement> ::= "return" [ <expression> ] ";"
 
 // 函数定义
-<function-definition> ::= "func" <identifier> "(" <parameter-list> ")" "{" <statement-list> "}"
+<function-definition> ::= "fun" <identifier> "(" <parameter-list> ")" "{" <statement-list> "}"
 // 函数参数列表
 <parameter-list> ::= <identifier> ("," <identifier>)* | ε
 
 // 复合类型定义
-<class-definition> ::= "class" <identifier> "{" <field-list> "}"
-// 复合类型字段列表
-<field-list>      ::= <field-decl> <field-list> | ε
+<class-definition> ::= "class" <identifier> "{" <class-member-list> "}"
+// 复合类型成员列表（包含字段和方法）
+<class-member-list> ::= <class-member> <class-member-list> | ε
+// 复合类型成员（字段或方法）
+<class-member> ::= <field-decl> | <method-definition>
 // 复合类型字段定义
 <field-decl>      ::= "var" <identifier> [ "=" <expression> ] ";"
+// 复合类型方法定义
+<method-definition> ::= "fun" <identifier> "(" <parameter-list> ")" "{" <statement-list> "}"
 // 复合类型构创建
 <class-instantiation> ::= <identifier> "(" [ <field-initializer-list> ] ")"
 <field-initializer-list> ::= <field-initializer> ( "," <field-initializer> )*
